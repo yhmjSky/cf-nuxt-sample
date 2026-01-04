@@ -1,0 +1,32 @@
+name = "smart-elderly-care"
+compatibility_date = "2025-12-30"
+
+# Cloudflare Pages 构建输出目录
+pages_build_output_dir = ".output/public"
+
+# D1 数据库绑定
+# 本地开发时会自动在 .wrangler/state 目录创建本地数据库
+[[d1_databases]]
+binding = "DB"
+database_name = "smart-elderly-care-db"
+database_id = "local-dev-db" # 本地开发可使用任意值，部署时替换为实际 ID
+
+# KV 存储绑定
+# 本地开发时会自动在 .wrangler/state 目录创建本地 KV
+[[kv_namespaces]]
+binding = "KV"
+id = "local-dev-kv" # 本地开发可使用任意值，部署时替换为实际 ID
+
+# ============================================
+# 如需连接远程云端服务进行开发，取消以下注释：
+# ============================================
+# [[d1_databases]]
+# binding = "DB"
+# database_name = "smart-elderly-care-db"
+# database_id = "<YOUR_REMOTE_DATABASE_ID>"
+# remote = true  # 连接远程 D1
+#
+# [[kv_namespaces]]
+# binding = "KV"
+# id = "<YOUR_REMOTE_KV_ID>"
+# remote = true  # 连接远程 KV

@@ -1,0 +1,25 @@
+{
+  "name": "cf-nuxt-sample",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt dev",
+    "dev:remote": "nuxt dev --remote",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "db:migrate:local": "wrangler d1 execute DB --local --file=./migrations/0001_initial.sql",
+    "db:migrate:remote": "wrangler d1 execute smart-elderly-care-db --remote --file=./migrations/0001_initial.sql",
+    "deploy": "npm run build && wrangler pages deploy .output/public"
+  },
+  "dependencies": {
+    "nuxt": "^4.2.2",
+    "nuxt-auth-utils": "^0.5.26",
+    "vue": "^3.5.26",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "wrangler": "^4.54.0"
+  }
+}
