@@ -14,12 +14,15 @@
     "deploy": "npm run build && wrangler pages deploy .output/public"
   },
   "dependencies": {
+    "drizzle-orm": "^0.45.1",
     "nuxt": "^4.2.2",
     "nuxt-auth-utils": "^0.5.26",
     "vue": "^3.5.26",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260103.0",
+    "drizzle-kit": "^0.31.8",
     "wrangler": "^4.54.0"
   }
 }

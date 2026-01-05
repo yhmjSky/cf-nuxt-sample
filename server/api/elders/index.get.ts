@@ -1,4 +1,7 @@
-import type { Elder, ApiResponse } from '~/types'
+import { useDrizzle, elders } from '~/server/db'
+import { desc } from 'drizzle-orm'
+import type { ApiResponse } from '~/types'
+import type { Elder } from '~/server/db/schema'
 
 // 获取老人列表
 export default defineEventHandler(async (event): Promise<ApiResponse<Elder[]>> => {
@@ -12,6 +15,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<Elder[]>> =
       data: [
         {
           id: 1,
+          tenant_id: 1,
           name: '张大爷',
           age: 78,
           gender: '男',
@@ -26,6 +30,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<Elder[]>> =
         },
         {
           id: 2,
+          tenant_id: 1,
           name: '李奶奶',
           age: 82,
           gender: '女',
@@ -40,6 +45,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<Elder[]>> =
         },
         {
           id: 3,
+          tenant_id: 1,
           name: '王大爷',
           age: 75,
           gender: '男',
@@ -57,12 +63,12 @@ export default defineEventHandler(async (event): Promise<ApiResponse<Elder[]>> =
   }
 
   try {
-    const db = cloudflare.env.DB
-    const { results } = await db.prepare('SELECT * FROM elders ORDER BY created_at DESC').all()
+    const db = useDrizzle(cloudflare.env.DB)
+    const results = await db.select().from(elders).orderBy(desc(elders.created_at))
 
     return {
       success: true,
-      data: results as Elder[]
+      data: results
     }
   } catch (error) {
     console.error('获取老人列表失败:', error)

@@ -1,4 +1,6 @@
-import type { Service, ApiResponse } from '~/types'
+import { useDrizzle, services } from '~/server/db'
+import type { ApiResponse } from '~/types'
+import type { Service } from '~/server/db/schema'
 
 // 添加服务记录
 export default defineEventHandler(async (event): Promise<ApiResponse<Service>> => {
@@ -21,6 +23,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<Service>> =
       message: '添加成功（模拟）',
       data: {
         id: Date.now(),
+        tenant_id: 1,
         elder_id: body.elder_id,
         service_type_id: body.service_type_id,
         service_type: body.service_type,
@@ -28,43 +31,31 @@ export default defineEventHandler(async (event): Promise<ApiResponse<Service>> =
         service_date: body.service_date || new Date().toISOString(),
         staff_name: body.staff_name || '',
         status: body.status || '待处理',
-        created_at: new Date().toISOString()
+        created_by: null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }
     }
   }
 
   try {
-    const db = cloudflare.env.DB
+    const db = useDrizzle(cloudflare.env.DB)
 
-    const result = await db.prepare(`
-      INSERT INTO services (elder_id, service_type_id, service_type, description, service_date, staff_name, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
-    `).bind(
-      body.elder_id,
-      body.service_type_id || null,
-      body.service_type,
-      body.description || '',
-      body.service_date || new Date().toISOString(),
-      body.staff_name || '',
-      body.status || '待处理'
-    ).run()
-
-    if (result.success) {
-      // 获取新插入的记录
-      const { results } = await db.prepare('SELECT * FROM services WHERE id = ?')
-        .bind(result.meta.last_row_id)
-        .all()
-
-      return {
-        success: true,
-        message: '添加成功',
-        data: results[0] as Service
-      }
-    }
+    const result = await db.insert(services).values({
+      elder_id: body.elder_id,
+      service_type_id: body.service_type_id || null,
+      service_type: body.service_type,
+      description: body.description || '',
+      service_date: body.service_date || new Date().toISOString(),
+      staff_name: body.staff_name || '',
+      status: body.status || '待处理',
+      tenant_id: 1, // TODO: 从会话获取租户 ID
+    }).returning()
 
     return {
-      success: false,
-      error: '添加失败'
+      success: true,
+      message: '添加成功',
+      data: result[0]
     }
   } catch (error) {
     console.error('添加服务记录失败:', error)

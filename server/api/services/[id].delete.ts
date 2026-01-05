@@ -1,3 +1,5 @@
+import { useDrizzle, services } from '~/server/db'
+import { eq } from 'drizzle-orm'
 import type { ApiResponse } from '~/types'
 
 // 删除服务记录
@@ -21,22 +23,13 @@ export default defineEventHandler(async (event): Promise<ApiResponse<null>> => {
   }
 
   try {
-    const db = cloudflare.env.DB
+    const db = useDrizzle(cloudflare.env.DB)
 
-    const result = await db.prepare('DELETE FROM services WHERE id = ?')
-      .bind(parseInt(id))
-      .run()
-
-    if (result.success) {
-      return {
-        success: true,
-        message: '删除成功'
-      }
-    }
+    await db.delete(services).where(eq(services.id, parseInt(id)))
 
     return {
-      success: false,
-      error: '删除失败'
+      success: true,
+      message: '删除成功'
     }
   } catch (error) {
     console.error('删除服务记录失败:', error)

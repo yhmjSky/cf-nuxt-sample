@@ -1,4 +1,6 @@
-import type { Elder, ApiResponse } from '~/types'
+import { useDrizzle, elders } from '~/server/db'
+import type { ApiResponse } from '~/types'
+import type { Elder } from '~/server/db/schema'
 
 // 添加新老人
 export default defineEventHandler(async (event): Promise<ApiResponse<Elder>> => {
@@ -21,6 +23,7 @@ export default defineEventHandler(async (event): Promise<ApiResponse<Elder>> => 
       message: '添加成功（模拟）',
       data: {
         id: Date.now(),
+        tenant_id: 1,
         name: body.name,
         age: body.age,
         gender: body.gender || '男',
@@ -37,39 +40,25 @@ export default defineEventHandler(async (event): Promise<ApiResponse<Elder>> => 
   }
 
   try {
-    const db = cloudflare.env.DB
+    const db = useDrizzle(cloudflare.env.DB)
 
-    const result = await db.prepare(`
-      INSERT INTO elders (name, age, gender, phone, address, health_status, emergency_contact, emergency_phone, notes)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(
-      body.name,
-      body.age,
-      body.gender || '男',
-      body.phone || '',
-      body.address || '',
-      body.health_status || '健康',
-      body.emergency_contact || '',
-      body.emergency_phone || '',
-      body.notes || ''
-    ).run()
-
-    if (result.success) {
-      // 获取新插入的记录
-      const { results } = await db.prepare('SELECT * FROM elders WHERE id = ?')
-        .bind(result.meta.last_row_id)
-        .all()
-
-      return {
-        success: true,
-        message: '添加成功',
-        data: results[0] as Elder
-      }
-    }
+    const result = await db.insert(elders).values({
+      name: body.name,
+      age: body.age,
+      gender: body.gender || '男',
+      phone: body.phone || '',
+      address: body.address || '',
+      health_status: body.health_status || '健康',
+      emergency_contact: body.emergency_contact || '',
+      emergency_phone: body.emergency_phone || '',
+      notes: body.notes || '',
+      tenant_id: 1, // TODO: 从会话获取租户 ID
+    }).returning()
 
     return {
-      success: false,
-      error: '添加失败'
+      success: true,
+      message: '添加成功',
+      data: result[0]
     }
   } catch (error) {
     console.error('添加老人失败:', error)
