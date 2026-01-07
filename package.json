@@ -11,7 +11,7 @@
     "postinstall": "nuxt prepare",
     "db:migrate:local": "wrangler d1 execute DB --local --file=./migrations/0001_initial.sql",
     "db:migrate:remote": "wrangler d1 execute smart-elderly-care-db --remote --file=./migrations/0001_initial.sql",
-    "deploy": "npm run build && wrangler pages deploy .output/public"
+    "deploy": "npm run build && wrangler pages deploy dist"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.1",
