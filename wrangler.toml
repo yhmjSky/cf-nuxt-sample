@@ -9,24 +9,10 @@ pages_build_output_dir = "dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "smart-elderly-care-db"
-database_id = "local-dev-db" # 本地开发可使用任意值，部署时替换为实际 ID
+database_id = "b76d76d2-6728-4231-834d-09e1652a5a41"
 
 # KV 存储绑定
 # 本地开发时会自动在 .wrangler/state 目录创建本地 KV
 [[kv_namespaces]]
 binding = "KV"
-id = "local-dev-kv" # 本地开发可使用任意值，部署时替换为实际 ID
-
-# ============================================
-# 如需连接远程云端服务进行开发，取消以下注释：
-# ============================================
-# [[d1_databases]]
-# binding = "DB"
-# database_name = "smart-elderly-care-db"
-# database_id = "<YOUR_REMOTE_DATABASE_ID>"
-# remote = true  # 连接远程 D1
-#
-# [[kv_namespaces]]
-# binding = "KV"
-# id = "<YOUR_REMOTE_KV_ID>"
-# remote = true  # 连接远程 KV
+id = "f7d3aa801b0142f88c377b6ca3e796e6"
